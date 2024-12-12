@@ -4,32 +4,37 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 
 function SearchEmp() {
-    let location = useLocation();
-    let query = new URLSearchParams(location.search).get('query');
-    let [results, setResults] = useState([]);
+  let location = useLocation();
+  let query = new URLSearchParams(location.search).get('query');
+  let [results, setResults] = useState([]);
 
-    useEffect(() => {
-        const fetchSearchResults = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/api/employees');
-                const filtered = response.data.filter(
-                    (item) =>
-                        item.name.toLowerCase().includes(query.toLowerCase()) ||
-                        item.email.toLowerCase().includes(query.toLowerCase()) ||
-                        item.mobile.includes(query) ||
-                        item.destination.toLowerCase().includes(query.toLowerCase()) ||
-                        (Array.isArray(item.course) ? item.course.join(', ').toLowerCase() : item.course.toLowerCase()).includes(query)
-                );
-                setResults(filtered);
-            } catch (error) {
-                console.error('Error fetching search results:', error.message);
-            }
-        };
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    const fetchSearchResults = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/employees',
+          {
+            headers: { "authorization": `Bearer ${token}` }
+          }
+        );
+        const filtered = response.data.filter(
+          (item) =>
+            item.name.toLowerCase().includes(query.toLowerCase()) ||
+            item.email.toLowerCase().includes(query.toLowerCase()) ||
+            item.mobile.includes(query) ||
+            item.destination.toLowerCase().includes(query.toLowerCase()) ||
+            (Array.isArray(item.course) ? item.course.join(', ').toLowerCase() : item.course.toLowerCase()).includes(query)
+        );
+        setResults(filtered);
+      } catch (error) {
+        console.error('Error fetching search results:', error.message);
+      }
+    };
 
-        if (query) fetchSearchResults();
-    }, [query]);
-    return (
-        <TableContainer component={Paper} sx={{ marginTop: '20px' }}>
+    if (query) fetchSearchResults();
+  }, [query]);
+  return (
+    <TableContainer component={Paper} sx={{ marginTop: '20px' }}>
       <Table>
         <TableHead>
           <TableRow>

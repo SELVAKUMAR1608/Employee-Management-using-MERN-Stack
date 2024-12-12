@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import{AppBar, Box, Button, TextField, Toolbar, Typography} from '@mui/material'
-import { Link, Outlet } from 'react-router-dom';
+import{AppBar, Box, Button, InputAdornment, TextField, Toolbar, Typography} from '@mui/material'
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 
@@ -28,21 +29,27 @@ const handleSearchSubmit = (e) => {
         <Toolbar sx={{display:'flex',justifyContent:'space-between'}}>
 
 <Box sx={{ display: 'flex', gap: '30px' }}>
-      <Typography component={Link} to="/Dashboard" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}>
+      <Typography component={NavLink} to="/Dashboard" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}  >
         HOME
       </Typography>
       
-      <Typography component={Link} to="createEmployee" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}>
+      <Typography component={NavLink} to="createEmployee" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}>
         CREATE
       </Typography>
 
-      <Typography component={Link} to="EmployeeList" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}>
+      <Typography component={NavLink} to="EmployeeList" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer' }}>
         EMPLOYEELIST
       </Typography>
     </Box>
     <Box sx={{ display: 'flex', gap: '30px' }}> 
       
-      <TextField component={Link} label="search" to="search" variant='filled'sx={{backgroundColor:"whitesmoke",height:'50px', width:"250px",borderRadius:"10px",marginRight:"50px",border:"none"}}  value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleSearchSubmit}/>
+      <TextField component={Link}  InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <PersonSearchIcon />
+          </InputAdornment>
+        ),
+      }} placeholder="Search" to="search" variant="filled"sx={{backgroundColor:"whitesmoke",height:'50px', width:"250px",borderRadius:"10px",marginRight:"50px",border:"none"}}  value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleSearchSubmit} fullWidth />
 
       <Typography component={Link} to="/" sx={{ textDecoration: 'none', color: 'white', cursor: 'pointer', marginTop:"10px",marginRight:"10px" }} onClick={handleLogout}>
         LOGOUT

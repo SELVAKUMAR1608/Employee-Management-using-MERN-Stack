@@ -5,6 +5,7 @@ require('dotenv').config();
 let signupPage=async(req,res)=>{
 
     const { username, email, password, confirmPassword } = req.body
+    console.log("Request body received in signupPage:", req.body);
         let hashedPassword=await bcyrpt.hash(password,10);
         try {
             let errors = {};
@@ -47,19 +48,10 @@ let loginPage=async(req,res)=>{
     let{username,password}=req.body;
         console.log('Login request received:', req.body);
         try {
-            // let errors={};
-            //  if(!username) errors.username="username is required";
-            //  if(!password) errors.password="Password is required";
-
-            //  if(Object.keys(errors).length>0){
-            //     return res.status(400).json({errors});
-            //  }
-             
             let existingUser=await user.findOne({username})
             let errors={};
             if(!username) errors.username="username is required";
             if(!password) errors.password="Password is required";
-            // if(!existingUser) errors.username="user Not Fount"
 
             if(Object.keys(errors).length>0){
                return res.status(400).json({errors});
@@ -107,7 +99,7 @@ let dashboard=(req,res)=>{
 let secreteKey=process.env.JWT_SECRET
 let verifyToken=async (req,res,next)=>{
     try{
-       let token= req.headers['authorization'].split(' ')[1];
+       let token= req.headers['authorization']?.split(' ')[1];
        console.log('authheader:',token);
        
        if(!token){
@@ -118,7 +110,7 @@ let verifyToken=async (req,res,next)=>{
        next();
    }
    catch(error){
-       res.status(400).json({message:"invalid token"})
+       res.status(401).json({message:"invalid token"})
    }
 }
 

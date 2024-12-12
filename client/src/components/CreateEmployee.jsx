@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react'
 import BackupIcon from '@mui/icons-material/Backup';
 import createStyle from '../css/createEmployee.module.css';
 import EmployeeList from './EmployeeList';
+import CreateModal from '../../popupModal/createModal';
+import UpdateModal from '../../popupModal/updateModal';
+import '../css/popup.css'
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
@@ -15,7 +18,9 @@ function CreateEmployee() {
         gender: '',
         course: '',
         file: null,
-    })
+    });
+    let[isCreating,setIsCreating]=useState(false);
+    let[isUpdating,setIsUpdating]=useState(false);
     let[imageUpload,setImageUpload]=useState();
     let location = useLocation();
     const VisuallyHiddenInput = styled('input')({
@@ -37,7 +42,13 @@ function CreateEmployee() {
     }, [location.state])
 
     let handleChange = (e) => {
-        setCreateEmp({ ...createEmp, [e.target.name]: e.target.value })
+        let{name,value,type,checked}=e.target
+        if(type === "radio" || type==="checkbox"){
+            setCreateEmp({...createEmp,[name]:checked ? value :''})
+        }else{
+            setCreateEmp({ ...createEmp, [name]:value })
+        }
+      
     }
     console.log(createEmp);
 
@@ -57,6 +68,8 @@ function CreateEmployee() {
 
     let formSubmit = async (e) => {
         e.preventDefault();
+        let token=localStorage.getItem("token")
+        setIsCreating(true);
         console.log('emp detailsubmitted');
         let formData=new FormData();
         formData.append("name",createEmp.name)
@@ -71,12 +84,23 @@ function CreateEmployee() {
         console.log("form data:",formData);
         
         try {
+
             if (createEmp._id) {
-                await axios.put(`http://localhost:5000/api/employees/${createEmp._id}`, formData);
+                setIsCreating(false);
+                setIsUpdating(true);
+                await axios.put(`http://localhost:5000/api/employees/${createEmp._id}`, formData,{
+                    headers:{"authorization":`Bearer ${token}`}
+                });
+                formReset();
+                setIsUpdating(false);
                 alert("updated successfully");
 
             } else {
-                await axios.post("http://localhost:5000/api/employees", formData);
+                await axios.post("http://localhost:5000/api/employees", formData,{
+                    headers:{"authorization":`Bearer ${token}`}
+
+                });
+                setIsCreating(false);
                 alert("Employee Details Created successfully")
                 formReset();
             }
@@ -90,20 +114,20 @@ function CreateEmployee() {
     return (
         <section className={createStyle.mainContainer}>
             <div className={createStyle.formContainer} onChange={(e) => handleChange(e)}>
-                <Typography variant='h5' color='primary' sx={{ marginBottom: '20px', marginTop: '-15px', fontWeight: 'bold' }}>CREATE  EMPLOYEE  DETAILS  HERE</Typography>
+                <Typography variant='h5' color='primary' sx={{ marginBottom: '20px', marginTop: '-15px',marginLeft:"90px", fontWeight: 'bold',fontFamily:"Arial, Helvetica, sans-serif" }}>ENTER DETAILS </Typography>
                 <form onSubmit={(e) => formSubmit(e)}>
                     <div className={createStyle.nameContainer}>
-                        <input type="text" placeholder='Name' name='name' value={createEmp.name} className={createStyle.input} />
+                        <input type="text" placeholder='Name' name='name' value={createEmp.name} className={createStyle.input} onChange={handleChange} />
                     </div>
                     <div className={createStyle.emailContainer}></div>
-                    <input type="email" placeholder='Email' name='email' value={createEmp.email} className={createStyle.input} />
-                    {/* </div> */}
+                    <input type="email" placeholder='Email' name='email' value={createEmp.email} className={createStyle.input} onChange={handleChange} />
+                    
 
                     <div className={createStyle.MobileContainer}>
-                        <input type="tel" placeholder='Mobile Number' name='mobile' value={createEmp.mobile} className={createStyle.input} />
+                        <input type="tel" placeholder='Mobile Number' name='mobile' value={createEmp.mobile} className={createStyle.input} onChange={handleChange} />
                     </div>
                     <div className={createStyle.destinationContainer}>
-                        <select name='destination' className={createStyle.input}>
+                        <select name='destination' className={createStyle.input}onChange={handleChange} >
                             <option value="">DESTINATION</option>
                             <option value='HR'>HR</option>
                             <option value='Manager'>Manager</option>
@@ -137,6 +161,8 @@ function CreateEmployee() {
                     </div>
                 </form>
             </div>
+            {isCreating && <CreateModal onCancel={()=>setIsCreating(false)}/>}
+            {isUpdating && <UpdateModal/>}
         </section>
     )
 }

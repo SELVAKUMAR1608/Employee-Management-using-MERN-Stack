@@ -60,7 +60,7 @@ function Login() {
                 <input type="password" className={loginStyle.LoginInput} placeholder='PASSWORD' name='password' onChange={(e)=>handleLoginChange(e)} />
                 {errors.username && <span  style={{ color: 'red',fontSize:'15px',marginLeft:'8px' }}>{errors.password}</span>}
 
-                <Button variant='contained'type='submit' sx={{width:'420px', height:'50px', borderRadius:'10px', marginTop:'70px', marginTop:'40px'}}>LOGIN</Button>
+                <Button variant='contained' type='submit' sx={{width:'420px', height:'50px', borderRadius:'10px', marginTop:'70px',}}>LOGIN</Button>
             </div>
             </form>
            
